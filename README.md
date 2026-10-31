@@ -1,21 +1,34 @@
 # Threat Intelligence Dashboard (Vercel)
 
-A lightweight React/Vite cyber-threat news dashboard deployed on Vercel.
+A React, TypeScript and Vite dashboard that aggregates cybersecurity RSS/Atom feeds into feed widgets and a unified card view. It includes global search, a keyword watchlist, a 24-hour/watchlist ticker, browser-local preferences and offline-tolerant feed caching.
 
 ## Local development
+
 - Node.js 20+
 - `npm install`
 - `npm run dev` (http://localhost:3000)
 - `npm run build`
 
-The `/api/rss` Vercel function fetches and parses RSS/Atom feeds server-side. It supports the six built-in feeds and up to 20 public HTTP(S) feed URLs, including user-added feeds. User-added feed definitions are stored in browser localStorage.
+## Architecture
 
-## End-to-end tests
-Install the browser once, then run the deterministic Playwright suite:
+- `/api/fetch-rss` fetches RSS/Atom feeds server-side, with upstream fallbacks.
+- `/api/fetch-og-image` resolves article preview images in safe, bounded batches.
+- IndexedDB stores feed snapshots (up to 100 stories per feed).
+- localStorage stores custom feeds, view preference, watchlist and a seven-day/500-entry OG image URL cache.
+- No authentication or server-side user database is required.
+
+See [docs/architecture.md](docs/architecture.md) for the request and cache flows, [docs/testing.md](docs/testing.md) for automated coverage, and [docs/known-gaps.md](docs/known-gaps.md) for the remaining differences from the original Lovable architecture.
+
+## Tests
+
 ```sh
 npx playwright install chromium
 npm test
+npm run build
 ```
-Tests stub `/api/rss`; they do not depend on upstream publishers or external image availability.
 
-Article publishers may omit images or block hotlinking. Cards use a placeholder if an image URL is missing or fails to load. If publishers are temporarily unavailable, the dashboard shows sample fallback stories with a status notice.
+The Playwright suite mocks feed and OG endpoints. It checks dashboard functionality deterministically; it does not replace live publisher smoke tests. See [docs/testing.md](docs/testing.md).
+
+## Current parity note
+
+The Vercel port is functional but not yet a complete architectural replica. In particular, its feed layout uses CSS grid, drag ordering and native resize rather than the original breakpoint-specific `react-grid-layout` engine. The known gaps and completion criteria are tracked in [docs/known-gaps.md](docs/known-gaps.md).
