@@ -169,3 +169,19 @@ test('ticker contains recent stories and pauses on hover',async({page})=>{
   await ticker.hover();
   await expect(ticker.locator('.ticker-track')).toHaveCSS('animation-play-state','paused');
 });
+
+test('ticker keeps a readable constant speed when the feed contains many stories',async({page})=>{
+  await page.route('**/api/fetch-rss',async route=>{
+    const url=route.request().postDataJSON().url,host=new URL(url).hostname;
+    const content=host==='www.darkreading.com'?feedXml(host,60,false):xml(host);
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({content})});
+  });
+  await page.reload();
+  const track=page.locator('.ticker-track');
+  await expect(track.locator('a')).toHaveCount(130,{timeout:15000});
+  await expect.poll(()=>track.evaluate(el=>parseFloat(getComputedStyle(el).animationDuration))).toBeGreaterThan(20);
+  const metrics=await track.evaluate(el=>({duration:parseFloat(getComputedStyle(el).animationDuration),distance:el.scrollWidth/2}));
+  const pixelsPerSecond=metrics.distance/metrics.duration;
+  expect(pixelsPerSecond).toBeGreaterThanOrEqual(30);
+  expect(pixelsPerSecond).toBeLessThanOrEqual(40);
+});
