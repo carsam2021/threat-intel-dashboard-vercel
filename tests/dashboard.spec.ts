@@ -185,3 +185,15 @@ test('ticker keeps a readable constant speed when the feed contains many stories
   expect(pixelsPerSecond).toBeGreaterThanOrEqual(30);
   expect(pixelsPerSecond).toBeLessThanOrEqual(40);
 });
+
+test('card view story image is clickable and the read-story link is removed',async({page})=>{
+  await page.getByRole('button',{name:'Switch to card view'}).click();
+  const card=page.locator('.news-card').filter({hasText:'Dark Reading featured image story'});
+  await expect(card).toBeVisible({timeout:15000});
+  const imageLink=card.locator('a.news-image-link');
+  await expect(imageLink).toBeVisible();
+  await expect(imageLink).toHaveAttribute('href','https://www.darkreading.com/story-image');
+  await expect(imageLink).toHaveAttribute('target','_blank');
+  await expect(card.locator('.read-more')).toHaveCount(0);
+  await expect(card.getByRole('link',{name:'Open story: Dark Reading featured image story'})).toBeVisible();
+});
