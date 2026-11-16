@@ -77,6 +77,7 @@ Storage access is guarded where possible so a disabled or full browser store doe
 
 - Feed mode presents one widget per source. Users can drag widgets to reorder and use native CSS resize handles.
 - Card mode merges all loaded feeds, deduplicates stories, sorts newest first, and lazy-resolves missing preview images.
+- Each story source is represented by a fixed 26×26px circular initial avatar (`border-radius: 50%`, no horizontal/vertical padding), so the badge remains round regardless of the source initial or flex layout.
 - The selected mode is stored as a plain localStorage string and restored on startup.
 
 ## 8. Security boundaries
