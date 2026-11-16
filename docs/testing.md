@@ -25,6 +25,7 @@ The Playwright suite uses mocked `/api/fetch-rss` and `/api/fetch-og-image` resp
 | OG batching | Requests contain no more than 10 article URLs |
 | Feed resilience | IndexedDB snapshot is shown and marked stale after a simulated upstream failure |
 | Ticker | Recent story links render and animation pauses on hover |
+| Card view | Story images link to the article; source initials use fixed 26×26px circular avatars with a 50% border radius; the removed “Read story” link stays absent |
 
 ## 3. Test design rules
 
