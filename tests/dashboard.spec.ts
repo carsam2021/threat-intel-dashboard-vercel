@@ -197,3 +197,14 @@ test('card view story image is clickable and the read-story link is removed',asy
   await expect(card.locator('.read-more')).toHaveCount(0);
   await expect(card.getByRole('link',{name:'Open story: Dark Reading featured image story'})).toBeVisible();
 });
+
+
+test('source initials render inside fixed-size circular avatars',async({page})=>{
+  const avatars=page.locator('.source-avatar');
+  await expect(avatars.first()).toBeVisible();
+  const geometry=await avatars.first().evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {width:r.width,height:r.height,borderRadius:s.borderRadius,flexBasis:s.flexBasis}});
+  expect(geometry.width).toBe(26);
+  expect(geometry.height).toBe(26);
+  expect(geometry.borderRadius).toBe('50%');
+  expect(geometry.flexBasis).toBe('26px');
+});
