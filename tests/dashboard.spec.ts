@@ -1,7 +1,8 @@
 import {test,expect} from '@playwright/test';
 
+const recentPubDate=new Date(Date.now()-60_000).toUTCString();
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p6sAAAAASUVORK5CYII=','base64');
-const item=(host:string,n=0,image=true)=>`<item><title>${host} security story ${n}</title><link>https://${host}/story-${n}</link><description><![CDATA[Threat intelligence story ${n}]]></description><pubDate>Sat, 31 Oct 2026 12:00:00 GMT</pubDate>${image?'<enclosure url="https://images.example.test/story.jpg" type="image/jpeg"/>':''}</item>`;
+const item=(host:string,n=0,image=true)=>`<item><title>${host} security story ${n}</title><link>https://${host}/story-${n}</link><description><![CDATA[Threat intelligence story ${n}]]></description><pubDate>${recentPubDate}</pubDate>${image?'<enclosure url="https://images.example.test/story.jpg" type="image/jpeg"/>':''}</item>`;
 const xml=(host:string)=>`<?xml version="1.0"?><rss version="2.0"><channel><title>${host}</title>${item(host)}</channel></rss>`;
 const feedXml=(host:string,count:number,image=true)=>`<?xml version="1.0"?><rss version="2.0"><channel><title>${host}</title>${Array.from({length:count},(_,n)=>item(host,n,image)).join('')}</channel></rss>`;
 
@@ -200,6 +201,7 @@ test('card view story image is clickable and the read-story link is removed',asy
 
 
 test('source initials render inside fixed-size circular avatars',async({page})=>{
+  await page.getByRole('button',{name:'Switch to card view'}).click();
   const avatars=page.locator('.source-avatar');
   await expect(avatars.first()).toBeVisible();
   const geometry=await avatars.first().evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {width:r.width,height:r.height,borderRadius:s.borderRadius,flexBasis:s.flexBasis}});
