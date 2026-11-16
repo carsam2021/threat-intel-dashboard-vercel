@@ -136,6 +136,7 @@ test('Open Graph requests are batched to ten URLs or fewer',async({page})=>{
   expect(requests.every(n=>n<=10)).toBe(true);
 });
 test('uses cached feed stories and marks the feed stale when upstream is unavailable',async({page})=>{
+  await expect(page.getByText('All feeds loaded (6)')).toBeVisible({timeout:15000});
   await page.evaluate(()=>new Promise<void>((resolve,reject)=>{
     const req=indexedDB.open('threat-intel-feed-cache',1);
     req.onerror=()=>reject(req.error);
